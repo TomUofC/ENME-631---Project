@@ -23,7 +23,7 @@ def RK2(function, y, t, tau):
 
     return(y_new)
 
-#Question 1 - Testing
+#Testing
 
 def myFunc(x, y):
     """Function used for testing the RK2 function
@@ -58,7 +58,7 @@ plt.ylabel('y')
 plt.tight_layout()
 plt.show()
 """
-#Question 2
+#Constants
 mu_e = 2                                        #number of nucleons per electron 
 
 p_slash_c = np.geomspace(0.1, 2.5e6, num=50)    #range of density values to be solved for
@@ -108,7 +108,7 @@ for p in np.geomspace(0.1, 2.5e6, num=50):                  #loops through range
 radius_solar = np.array(radius)*R_0/R_sun                   #converts dimensionless radius in terms of solar radius
 mass_solar = np.array(mass)*M_0/M_sun                       #converts dimensionless mass in terms of solar mass
 
-#Question 3
+#Plots mass vs radius
 
 plt.plot(mass_solar,radius_solar, 'b', label="2nd Order RK")                    #plots the mass vs radius in terms of solar units
 plt.axvline(x=M_limit ,linestyle='--',label="Chandrasekhar limit (1.46 M⊙)")   #label for the Chandradekhar limit
@@ -118,7 +118,7 @@ plt.xlabel('Mass (M⊙)')
 plt.title("White Dwarf Radii vs Mass")
 plt.show()
 
-#Question 4
+#Solves using ivp function
 def system_ivp(r,y):                                    #redefines the system to use in ivp (note the arguments are swapped)
     p = y[0]                                            #density
     m = y[1]                                            #mass
@@ -147,7 +147,7 @@ plt.xlim([0, 20])
 plt.title("White Dwarf Radii vs Mass")
 plt.show()
 
-#Question 5
+#Plotting vs example stars
 stars = np.loadtxt('wd_data.txt',usecols=(1,2,3,4))                                 #gets star data from file
 star_names = np.genfromtxt('wd_data.txt', dtype=str, usecols=(0)).tolist()          #gets star names from file
 
