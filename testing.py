@@ -129,9 +129,9 @@ for p_AB in np.geomspace(0.1, 2.5e6, num=50):                  #loops through ra
     y = np.array([p_AB, m_init_AB])                               #states initial conditions for the state vector
     
     y0 = RK4(system,y,r[0],tau_AB)
-    y1 = RK4(system,y,r[tau_AB],tau_AB)
-    y2 = RK4(system,y,r[2*tau_AB],tau_AB)
-    y3 = RK4(system,y,r[3*tau_AB],tau_AB)
+    y1 = RK4(system,y,r[1],tau_AB)
+    y2 = RK4(system,y,r[2],tau_AB)
+    y3 = RK4(system,y,r[3],tau_AB)
 
     for i in range(len(r)):                                 #loops through range of radii values
         y_prev = y                                          #saves the previous state vector
@@ -149,6 +149,7 @@ mass_solar_AB = np.array(mass_AB)*M_0/M_sun                       #converts dime
 
 #Plots mass vs radius
 plt.plot(mass_solar_RK4,radius_solar_RK4, 'b', label="4th Order RK - Tau = {}".format(tau_RK4))     #plots the RK4 function
+plt.plot(mass_solar_AB,radius_solar_AB, 'b', label="4th Order Adam-Bashford - Tau = {}".format(tau_AB))
 plt.plot(mass_solar_Eu,radius_solar_Eu, 'g', label="Euler Method - Tau = {}".format(tau_Eu))
 plt.axvline(x=M_limit ,linestyle='--',label="Chandrasekhar limit (1.46 M⊙)")
 plt.legend()
