@@ -23,6 +23,29 @@ def RK2(function, y, t, tau):
 
     return(y_new)
 
+
+def RK4(function, y, t, tau):
+    """Solves a given function with initial conditions using the 4th order Runge-Kutta method \n
+    Inputs:\n
+    function -> the function or ODE to be solved\n
+    y_init -> the initial condition for the function\n
+    x_range -> the range of values to solve for\n
+    tau -> the step between iterations
+    """
+    k1 = function(y, t)                 #evaluates the function at the current step
+    
+    k2 = function((y+tau/2),(t+k1/2))
+
+    k3 = function((y+tau/2),(t+k2/2))
+
+    k4 = function((y+tau),(t+k3))
+
+    k = (k1+(2*k2)+(2*k3)+k4)/6
+    
+    y_new = y + k                  #find the next iteration y value
+
+    return(y_new)
+
 #Testing
 
 def myFunc(x, y):
