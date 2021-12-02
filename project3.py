@@ -34,13 +34,13 @@ def RK4(function, y, t, tau):
     """
     k1 = function(y, t)                 #evaluates the function at the current step
 
-    k2 = function((y + (tau/2)*(k1)),(t+tau/2))
+    k2 = function(y + (tau/2)*k1,(t+tau/2))
 
-    k3 = function(y + (tau/2)*(k2),(t+tau/2))
+    k3 = function(y + (tau/2)*k2,(t+tau/2))
 
-    k4 = function(y + (tau/2)*(k3),(t+tau))
+    k4 = function(y + (tau/2)*k3,(t+tau))
 
-    k = (k1+(2*k2)+(2*k3)+k4)/6
+    k = tau*(k1+(2*k2)+(2*k3)+k4)/6
     
     y_new = y + k                  #find the next iteration y value
 
@@ -101,15 +101,15 @@ for p_RK2 in np.geomspace(0.1, 2.5e6, num=50):                  #loops through r
 radius_solar_RK2 = np.array(radius_RK2)*R_0/R_sun                   #converts dimensionless radius in terms of solar radius
 mass_solar_RK2 = np.array(mass_RK2)*M_0/M_sun                       #converts dimensionless mass in terms of solar mass
 
-def system_RK4(y,r):
+def system_RK4(z,r):
     """
     Describes the system of ODEs for white dwarf masses and radii
     Inputs: \n y -> state vector for the system 
     \n r -> radius value for the system
     Returns: values for dpdr and dmdr
     """
-    p = y[0]                                                #density of the white dwarf
-    m = y[1]                                                #mass of the white dwarf
+    p = z[0]                                                #density of the white dwarf
+    m = z[1]                                                #mass of the white dwarf
     print("p:",p,"m:", m)
     dpdr = -m*p/(p**(2/3)*r**2/(3*(1+p**(1/3))**(0.5)))     #differential equation for the density
     dmdr = r**2*p                                           #differential equation for the mass
@@ -119,15 +119,15 @@ radius_RK4 = []                                                 #list for final 
 mass_RK4 = []                                                   #list for final mass values
 
 for p in np.geomspace(0.1, 2.5e6, num=50):                  #loops through range of central density values
-    y = np.array([p_RK4, m_init_RK4])                               #states initial conditions for the state vector
+    z = np.array([p_RK4, m_init_RK4])                               #states initial conditions for the state vector
     
     for i in range(len(r)):                                 #loops through range of radii values
-        y_prev = y                                          #saves the previous state vector
-        y = RK4(system_RK4,y[0],r[i],tau)                          #RK2 function calculate the new state vector value
+        z_prev = z                                          #saves the previous state vector
+        z = RK4(system_RK4,z,r[i],tau)                          #RK2 function calculate the new state vector value
 
-        if np.isnan(y[0]) == True:                          #checks if the density (z[0]) is not a number (i.e. divide by zero)
+        if np.isnan(z[0]) == True:                          #checks if the density (z[0]) is not a number (i.e. divide by zero)
             radius_RK4.append(r[i-1])          #if the density is zero then the radius and mass lists are appended with the previous value
-            mass_RK4.append(y_prev[1])
+            mass_RK4.append(z_prev[1])
             break                                           #ends the loop iteration for that given central density
 
 radius_solar_RK4 = np.array(radius_RK4)*R_0/R_sun                   #converts dimensionless radius in terms of solar radius
