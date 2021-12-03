@@ -36,6 +36,7 @@ def RK4(function, y, t, tau):
 
     return(y_new)
 
+
 #Constants
 mu_e = 2                                        #number of nucleons per electron 
 
@@ -126,20 +127,26 @@ radius_AB = []
 mass_AB = [] 
 
 for p_AB in np.geomspace(0.1, 2.5e6, num=50):                  #loops through range of central density values
-    y = np.array([p_AB, m_init_AB])                               #states initial conditions for the state vector
+    y = np.array([p_AB, r])                               #states initial conditions for the state vector
     
-    y0 = RK4(system,y,r[0],tau_AB)
-    y1 = RK4(system,y,r[1],tau_AB)
-    y2 = RK4(system,y,r[2],tau_AB)
-    y3 = RK4(system,y,r[3],tau_AB)
+    y[0] = p_AB
 
-    for i in range(len(r)):                                 #loops through range of radii values
-        y_prev = y                                          #saves the previous state vector
-        y = y_prev + (1/24)*(55*y3-59*y2+37*y1-9*y0)*tau_AB                          #calculates the new state vector value
+    y[1] = RK4(system,y[0],r[0],tau_AB)
+    y[2] = RK4(system,y[1],r[1],tau_AB)
+    y[3] = RK4(system,y[2],r[2],tau_AB)
 
+    f_m2 = system(y[0],r[0])
+    f_m1 = system(y[1],r[1])
+    f_0 = system(y[2],r[2])
+    f_1 = system(y[3],r[3])
+
+    for i in range(3,len(r)-1):                                 #loops through range of radii values
+        f_m3, f_m2, f_m1, f_0 = f_m2, f_m1, f_0, f_1                                          #saves the previous state vector
+        y[i+1] = y[i] + (1/24)*(55*f_0-59*f_m1+37*f_m2-9*f_m3)*tau_AB                          #calculates the new state vector value
+        f_1 = system(y[i+1],r[i+1])
         if np.isnan(y[0]) == True:                          #checks if the density (y[0]) is not a number (i.e. divide by zero)
             radius_AB.append(r[i-1])          #if the density is zero then the radius and mass lists are appended with the previous value
-            mass_AB.append(y_prev[1])
+            mass_AB.append(y[1])
             break                                           #ends the loop iteration for that given central density
 
 radius_solar_AB = np.array(radius_AB)*R_0/R_sun                   #converts dimensionless radius in terms of solar radius
