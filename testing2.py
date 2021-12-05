@@ -40,7 +40,7 @@ def RK4(function, y, t, tau):
 #Constants
 mu_e = 2                                        #number of nucleons per electron 
 
-p_slash_c = np.geomspace(0.1, 2.5e5, num=100)    #range of density values to be solved for
+p_slash_c = np.geomspace(0.1, 2.5e6, num=100)    #range of density values to be solved for
 p_init = p_slash_c                              #initial density value
 p_0 = 9.74e5*mu_e                               #standard white dwarf density value
 p_Eu = np.zeros((len(p_slash_c)))
@@ -48,10 +48,7 @@ p_RK4 = np.zeros((len(p_slash_c)))
 p_Rel_RK4 = np.zeros((len(p_slash_c)))
 p_AB = np.zeros((len(p_slash_c)))
 
-tau = 0.0001
-tau_RK4 = 0.0001                                      #step between radius values
-tau_Eu = 0.01
-tau_AB = 0.01
+tau = 0.0001                                    #step between iterations
 
 R_0 = 7.72e8/mu_e                               #standard size of a white dwarf
 R_sun = 69600000000.0                           #radius of the sun [cm]
@@ -90,13 +87,13 @@ def gamma(y):
 
 def RelCase(y,r):
 
-    q = y[0]
+    p = y[0]
     m = y[1]
 
-    dqdx = -1*((q*m)/(r**2*(gamma(q))))
-    dmdx = 3*r**2*q
+    dpdr = -m*p/(r**2*(gamma(p)))
+    dmdr = r**2*p
 
-    return np.array([dqdx, dmdx])
+    return np.array([dpdr, dmdr])
 
 
 radius_RK4 = []                                                 #list for final radii values
@@ -111,7 +108,7 @@ for p_RK4 in np.geomspace(0.1, 2.5e6, num=50):                  #loops through r
     
     for i in range(len(r)):                                 #loops through range of radii values
         y_prev = y                                          #saves the previous state vector
-        y = RK4(system,y,r[i],tau_RK4)                          #RK2 function calculate the new state vector value
+        y = RK4(system,y,r[i],tau)                          #RK2 function calculate the new state vector value
 
         if np.isnan(y[0]) == True:                          #checks if the density (y[0]) is not a number (i.e. divide by zero)
             radius_RK4.append(r[i-1])          #if the density is zero then the radius and mass lists are appended with the previous value
@@ -131,15 +128,15 @@ for p_Rel_RK4 in np.geomspace(0.1, 2.5e6, num=50):                  #loops throu
     
     for i in range(len(r)):                                 #loops through range of radii values
         y_prev = y                                          #saves the previous state vector
-        y = RK4(RelCase,y,r[i],tau_RK4)                          #RK2 function calculate the new state vector value
+        y = RK4(RelCase,y,r[i],tau)                          #RK2 function calculate the new state vector value
 
         if np.isnan(y[0]) == True:                          #checks if the density (y[0]) is not a number (i.e. divide by zero)
-            radius_RK4.append(r[i-1])          #if the density is zero then the radius and mass lists are appended with the previous value
-            mass_RK4.append(y_prev[1])
+            radius_Rel_RK4.append(r[i-1])          #if the density is zero then the radius and mass lists are appended with the previous value
+            mass_Rel_RK4.append(y_prev[1])
             break                                           #ends the loop iteration for that given central density
 
-radius_solar_Rel_RK4 = np.array(radius_RK4)*R_0/R_sun                   #converts dimensionless radius in terms of solar radius
-mass_solar_Rel_RK4 = np.array(mass_RK4)*M_0/M_sun                       #converts dimensionless mass in terms of solar mass
+radius_solar_Rel_RK4 = np.array(radius_Rel_RK4)*R_0/R_sun                   #converts dimensionless radius in terms of solar radius
+mass_solar_Rel_RK4 = np.array(mass_Rel_RK4)*M_0/M_sun                       #converts dimensionless mass in terms of solar mass
 
 
 #EULER METHOD
@@ -152,7 +149,7 @@ for p_Eu in np.geomspace(0.1, 2.5e6, num=50):                  #loops through ra
     
     for i in range(len(r)):                                 #loops through range of radii values
         y_prev = y                                          #saves the previous state vector
-        y = RK4(system,y,r[i],tau_Eu)                          #RK2 function calculate the new state vector value
+        y = RK4(system,y,r[i],tau)                          #RK2 function calculate the new state vector value
 
         if np.isnan(y[0]) == True:                          #checks if the density (y[0]) is not a number (i.e. divide by zero)
             radius_Eu.append(r[i-1])          #if the density is zero then the radius and mass lists are appended with the previous value
@@ -196,15 +193,15 @@ mass_solar_AB = np.array(mass_AB)*M_0/M_sun                       #converts dime
 
 
 #Plots mass vs radius
-#plt.plot(mass_solar_RK4,radius_solar_RK4, 'b', label="4th Order RK - Tau = {}".format(tau_RK4))     #plots the RK4 function
-plt.plot(mass_solar_Rel_RK4,radius_solar_Rel_RK4, 'r', label="Relativistic 4th Order RK - Tau = {}".format(tau_RK4))     #plots the RK4 function
-#plt.plot(mass_solar_AB,radius_solar_AB, 'b', label="4th Order Adam-Bashford - Tau = {}".format(tau_AB))
-#plt.plot(mass_solar_Eu,radius_solar_Eu, 'g', label="Euler Method - Tau = {}".format(tau_Eu))
+plt.plot(mass_solar_RK4,radius_solar_RK4, 'b', label="4th Order RK - Tau = {}".format(tau))     #plots the RK4 function
+plt.plot(mass_solar_Rel_RK4,radius_solar_Rel_RK4, 'r', label="Relativistic 4th Order RK - Tau = {}".format(tau))     #plots the RK4 function
+#plt.plot(mass_solar_AB,radius_solar_AB, 'b', label="4th Order Adam-Bashford - Tau = {}".format(tau))
+plt.plot(mass_solar_Eu,radius_solar_Eu, 'g', label="Euler Method - Tau = {}".format(tau))
 plt.axvline(x=M_limit ,linestyle='--',label="Chandrasekhar limit (1.46 M⊙)")
 plt.legend()
 plt.ylabel('Radius (R⊙)')
 plt.xlabel('Mass (M⊙)')
-plt.xlim([0, 20])
+plt.xlim([0, 1.5])
 plt.title("White Dwarf Radii vs Mass")
 plt.show()
 
@@ -215,8 +212,9 @@ star_names = np.genfromtxt('wd_data.txt', dtype=str, usecols=(0)).tolist()      
 plt.plot(stars[:,0],stars[:,2], '*', label="Star Data")
 plt.errorbar(x=stars[:,0],y=stars[:,2],yerr=stars[:,3],xerr=stars[:,1], fmt=' ',color='b', elinewidth=0.5)
 for i in range(len(star_names)): plt.annotate(star_names[i],xy=(stars[i,0],stars[i,2]))     #adds star names to star data
-plt.plot(mass_solar_RK4,radius_solar_RK4, 'g', label="4th Order RK - Tau = {}".format(tau_RK4))
-plt.plot(mass_solar_Eu,radius_solar_Eu, 'b', label="Euler Method - Tau = {}".format(tau_Eu))
+plt.plot(mass_solar_RK4,radius_solar_RK4, 'g', label="4th Order RK - Tau = {}".format(tau))
+plt.plot(mass_solar_Rel_RK4,radius_solar_Rel_RK4, 'r', label="Relativistic 4th Order RK - Tau = {}".format(tau))     #plots the RK4 function
+plt.plot(mass_solar_Eu,radius_solar_Eu, 'b', label="Euler Method - Tau = {}".format(tau))
 plt.axvline(x=M_limit ,linestyle='--',label="Chandrasekhar limit (1.46 M⊙)")
 plt.legend()
 plt.ylabel('Radius (R⊙)')
