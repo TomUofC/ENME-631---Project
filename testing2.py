@@ -38,19 +38,22 @@ def RK4(function, y, t, tau):
 
 
 #Constants
-mu_e = 2                                        #number of nucleons per electron 
+mu_e_c = 12/6                                   #number of nucleons per electron, Carbon
+mu_e_fe = 56/26                                 #nucleons per electron, Iron        
 
 p_slash_c = np.geomspace(0.1, 2.5e6, num=100)    #range of density values to be solved for
 p_init = p_slash_c                              #initial density value
-p_0 = 9.74e5*mu_e                               #standard white dwarf density value
+p_0_c = 9.74e5*mu_e_c                               #standard white dwarf density value
+p_0_fe = 9.74e5*mu_e_fe
 p_Eu = np.zeros((len(p_slash_c)))
 p_RK4 = np.zeros((len(p_slash_c)))
 p_Rel_RK4 = np.zeros((len(p_slash_c)))
 p_AB = np.zeros((len(p_slash_c)))
 
-tau = 0.0001                                    #step between iterations
+tau = 0.001                                    #step between iterations
 
-R_0 = 7.72e8/mu_e                               #standard size of a white dwarf
+R_0_c = 7.72e8/mu_e_c                               #standard size of a white dwarf
+R_0_fe = 7.72e8/mu_e_fe
 R_sun = 69600000000.0                           #radius of the sun [cm]
 r = np.arange(tau, 4+tau,tau)                   #range of r values to be iterated over
 
@@ -59,7 +62,8 @@ m_init_RK4 = 0.0
 m_init_Rel_RK4 = 0.0                                   
 m_init_AB = 0.0
 
-M_0 = 5.67e33/(mu_e**2)                         #standard white dwarf mass
+M_0_c = 5.67e33/(mu_e_c**2)                         #standard white dwarf mass
+M_0_fe = 5.67e33/(mu_e_fe**2)
 M_sun = 1.989e+33                               #mass of the sun [g]
 M_limit = 1.46                                  #Chandrasekhar limit in solar masses
 
@@ -100,9 +104,9 @@ radius_RK4 = []                                                 #list for final 
 mass_RK4 = []                                                   #list for final mass values
 
 
-#RK4 METHOD
+#RK4 METHOD--------------------------------------------------------------------------------------------------------------------------------
 
-#NON-RELATIVISTIC
+#NON-RELATIVISTIC--------------------------------------------------------------------------------------------------------------------------
 for p_RK4 in np.geomspace(0.1, 2.5e6, num=50):                  #loops through range of central density values
     y = np.array([p_RK4, m_init_RK4])                               #states initial conditions for the state vector
     
@@ -115,11 +119,11 @@ for p_RK4 in np.geomspace(0.1, 2.5e6, num=50):                  #loops through r
             mass_RK4.append(y_prev[1])
             break                                           #ends the loop iteration for that given central density
 
-radius_solar_RK4 = np.array(radius_RK4)*R_0/R_sun                   #converts dimensionless radius in terms of solar radius
-mass_solar_RK4 = np.array(mass_RK4)*M_0/M_sun                       #converts dimensionless mass in terms of solar mass
+radius_solar_RK4 = np.array(radius_RK4)*R_0_c/R_sun                   #converts dimensionless radius in terms of solar radius
+mass_solar_RK4 = np.array(mass_RK4)*M_0_c/M_sun                       #converts dimensionless mass in terms of solar mass
 
 
-#RELATIVISTIC
+#RELATIVISTIC (Carbon)----------------------------------------------------------------------------------------------------------------------
 radius_Rel_RK4 = []                                                 #list for final radii values
 mass_Rel_RK4 = []
 
@@ -135,11 +139,17 @@ for p_Rel_RK4 in np.geomspace(0.1, 2.5e6, num=50):                  #loops throu
             mass_Rel_RK4.append(y_prev[1])
             break                                           #ends the loop iteration for that given central density
 
-radius_solar_Rel_RK4 = np.array(radius_Rel_RK4)*R_0/R_sun                   #converts dimensionless radius in terms of solar radius
-mass_solar_Rel_RK4 = np.array(mass_Rel_RK4)*M_0/M_sun                       #converts dimensionless mass in terms of solar mass
+#Carbon Core
+radius_solar_Rel_RK4 = np.array(radius_Rel_RK4)*R_0_c/R_sun                   #converts dimensionless radius in terms of solar radius
+mass_solar_Rel_RK4 = np.array(mass_Rel_RK4)*M_0_c/M_sun                       #converts dimensionless mass in terms of solar mass
+
+#Iron Core
+radius_solar_Rel_fe_RK4 = np.array(radius_Rel_RK4)*R_0_fe/R_sun                   #converts dimensionless radius in terms of solar radius
+mass_solar_Rel_fe_RK4 = np.array(mass_Rel_RK4)*M_0_fe/M_sun                       #converts dimensionless mass in terms of solar mass
 
 
-#EULER METHOD
+
+#EULER METHOD-----------------------------------------------------------------------------------------------------------------------------
 
 radius_Eu = []                                                 #list for final radii values
 mass_Eu = []                                                   #list for final mass values
@@ -156,10 +166,10 @@ for p_Eu in np.geomspace(0.1, 2.5e6, num=50):                  #loops through ra
             mass_Eu.append(y_prev[1])
             break                                           #ends the loop iteration for that given central density
 
-radius_solar_Eu = np.array(radius_Eu)*R_0/R_sun                   #converts dimensionless radius in terms of solar radius
-mass_solar_Eu = np.array(mass_Eu)*M_0/M_sun                       #converts dimensionless mass in terms of solar mass
+radius_solar_Eu = np.array(radius_Eu)*R_0_c/R_sun                   #converts dimensionless radius in terms of solar radius
+mass_solar_Eu = np.array(mass_Eu)*M_0_c/M_sun                       #converts dimensionless mass in terms of solar mass
 
-#4th ORDER ADAM-BASHFORTH
+#4th ORDER ADAM-BASHFORTH-----------------------------------------------------------------------------------------------------------------
 """
 radius_AB = []                                                 
 mass_AB = [] 
@@ -192,9 +202,10 @@ mass_solar_AB = np.array(mass_AB)*M_0/M_sun                       #converts dime
 """
 
 
-#Plots mass vs radius
+#Plots mass vs radius-------------------------------------------------------------------------------------------------------------------
 plt.plot(mass_solar_RK4,radius_solar_RK4, 'b', label="4th Order RK - Tau = {}".format(tau))     #plots the RK4 function
-plt.plot(mass_solar_Rel_RK4,radius_solar_Rel_RK4, 'r', label="Relativistic 4th Order RK - Tau = {}".format(tau))     #plots the RK4 function
+plt.plot(mass_solar_Rel_RK4,radius_solar_Rel_RK4,linestyle='--', label="Relativistic 4th Order RK (Carbon) - Tau = {}".format(tau))
+plt.plot(mass_solar_Rel_fe_RK4,radius_solar_Rel_fe_RK4,linestyle='--', label="Relativistic 4th Order RK (Iron) - Tau = {}".format(tau))     #plots the RK4 function
 #plt.plot(mass_solar_AB,radius_solar_AB, 'b', label="4th Order Adam-Bashford - Tau = {}".format(tau))
 plt.plot(mass_solar_Eu,radius_solar_Eu, 'g', label="Euler Method - Tau = {}".format(tau))
 plt.axvline(x=M_limit ,linestyle='--',label="Chandrasekhar limit (1.46 M⊙)")
@@ -205,7 +216,7 @@ plt.xlim([0, 1.5])
 plt.title("White Dwarf Radii vs Mass")
 plt.show()
 
-#Plotting vs example stars
+#Plotting vs example stars--------------------------------------------------------------------------------------------------------------------
 stars = np.loadtxt('wd_data.txt',usecols=(1,2,3,4))                                 #gets star data from file
 star_names = np.genfromtxt('wd_data.txt', dtype=str, usecols=(0)).tolist()          #gets star names from file
 
@@ -213,7 +224,9 @@ plt.plot(stars[:,0],stars[:,2], '*', label="Star Data")
 plt.errorbar(x=stars[:,0],y=stars[:,2],yerr=stars[:,3],xerr=stars[:,1], fmt=' ',color='b', elinewidth=0.5)
 for i in range(len(star_names)): plt.annotate(star_names[i],xy=(stars[i,0],stars[i,2]))     #adds star names to star data
 plt.plot(mass_solar_RK4,radius_solar_RK4, 'g', label="4th Order RK - Tau = {}".format(tau))
-plt.plot(mass_solar_Rel_RK4,radius_solar_Rel_RK4, 'r', label="Relativistic 4th Order RK - Tau = {}".format(tau))     #plots the RK4 function
+plt.plot(mass_solar_Rel_RK4,radius_solar_Rel_RK4,linestyle='--', label="Relativistic 4th Order RK - Tau = {}".format(tau))     #plots the RK4 function
+plt.plot(mass_solar_Rel_fe_RK4,radius_solar_Rel_fe_RK4,linestyle='--', label="Relativistic 4th Order RK (Iron) - Tau = {}".format(tau))     #plots the RK4 function
+
 plt.plot(mass_solar_Eu,radius_solar_Eu, 'b', label="Euler Method - Tau = {}".format(tau))
 plt.axvline(x=M_limit ,linestyle='--',label="Chandrasekhar limit (1.46 M⊙)")
 plt.legend()
