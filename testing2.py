@@ -50,7 +50,7 @@ p_RK4 = np.zeros((len(p_slash_c)))
 p_Rel_RK4 = np.zeros((len(p_slash_c)))
 p_AB = np.zeros((len(p_slash_c)))
 
-tau = 0.001                                    #step between iterations
+tau = 0.0001                                    #step between iterations
 
 R_0_c = 7.72e8/mu_e_c                               #standard size of a white dwarf
 R_0_fe = 7.72e8/mu_e_fe
