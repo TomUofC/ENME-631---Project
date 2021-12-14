@@ -159,7 +159,7 @@ for p_Eu in np.geomspace(0.1, 2.5e6, num=50):                  #loops through ra
     
     for i in range(len(r)):                                 #loops through range of radii values
         y_prev = y                                          #saves the previous state vector
-        y = RK4(system,y,r[i],tau)                          #RK2 function calculate the new state vector value
+        y = Euler(system,y,r[i],tau)                          #RK2 function calculate the new state vector value
 
         if np.isnan(y[0]) == True:                          #checks if the density (y[0]) is not a number (i.e. divide by zero)
             radius_Eu.append(r[i-1])          #if the density is zero then the radius and mass lists are appended with the previous value
