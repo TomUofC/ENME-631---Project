@@ -204,8 +204,8 @@ mass_solar_AB = np.array(mass_AB)*M_0/M_sun                       #converts dime
 plt.rcParams.update({'font.size': 20})
 #Plots mass vs radius-------------------------------------------------------------------------------------------------------------------
 plt.plot(mass_solar_RK4,radius_solar_RK4, 'b',linewidth=3, label="4th Order RK")     #plots the RK4 function
-plt.plot(mass_solar_Rel_RK4,radius_solar_Rel_RK4,linestyle='--',linewidth=3 ,label="Relativistic 4th Order RK (Carbon)")
-plt.plot(mass_solar_Rel_fe_RK4,radius_solar_Rel_fe_RK4,linestyle='--',linewidth=3, label="Relativistic 4th Order RK (Iron)")     #plots the RK4 function
+plt.plot(mass_solar_Rel_RK4,radius_solar_Rel_RK4,'c',linestyle='--',linewidth=3 ,label="Relativistic 4th Order RK (Carbon)")
+plt.plot(mass_solar_Rel_fe_RK4,radius_solar_Rel_fe_RK4,'r',linestyle='--',linewidth=3, label="Relativistic 4th Order RK (Iron)")     #plots the RK4 function
 #plt.plot(mass_solar_AB,radius_solar_AB, 'b', label="4th Order Adam-Bashford - Tau = {}".format(tau))
 plt.plot(mass_solar_Eu,radius_solar_Eu, 'g',linewidth=3, label="Euler Method")
 plt.axvline(x=M_limit ,linestyle='--',label="Chandrasekhar limit (1.46 M⊙)")
@@ -223,11 +223,11 @@ star_names = np.genfromtxt('wd_data.txt', dtype=str, usecols=(0)).tolist()      
 plt.plot(stars[:,0],stars[:,2], '*', label="Star Data")
 plt.errorbar(x=stars[:,0],y=stars[:,2],yerr=stars[:,3],xerr=stars[:,1], fmt=' ',color='b', elinewidth=0.5)
 for i in range(len(star_names)): plt.annotate(star_names[i],xy=(stars[i,0],stars[i,2]),fontsize=12)     #adds star names to star data
-plt.plot(mass_solar_RK4,radius_solar_RK4, 'g',linewidth=3, label="4th Order RK")
-plt.plot(mass_solar_Rel_RK4,radius_solar_Rel_RK4,linestyle='--',linewidth=3, label="Relativistic 4th Order RK (Carbon)")     #plots the RK4 function
-plt.plot(mass_solar_Rel_fe_RK4,radius_solar_Rel_fe_RK4,linestyle='--',linewidth=3, label="Relativistic 4th Order RK (Iron)")     #plots the RK4 function
+plt.plot(mass_solar_RK4,radius_solar_RK4, 'b',linewidth=3, label="4th Order RK")
+plt.plot(mass_solar_Rel_RK4,radius_solar_Rel_RK4,'c',linestyle='--',linewidth=3, label="Relativistic 4th Order RK (Carbon)")     #plots the RK4 function
+plt.plot(mass_solar_Rel_fe_RK4,radius_solar_Rel_fe_RK4,'r',linestyle='--',linewidth=3, label="Relativistic 4th Order RK (Iron)")     #plots the RK4 function
 
-plt.plot(mass_solar_Eu,radius_solar_Eu, 'b',linewidth=3, label="Euler Method")
+plt.plot(mass_solar_Eu,radius_solar_Eu, 'g',linewidth=3, label="Euler Method")
 plt.axvline(x=M_limit ,linestyle='--',label="Chandrasekhar limit (1.46 M⊙)")
 plt.legend()
 plt.ylabel('Radius (R⊙)')
