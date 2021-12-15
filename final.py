@@ -169,44 +169,12 @@ for p_Eu in np.geomspace(0.1, 2.5e6, num=50):                  #loops through ra
 radius_solar_Eu = np.array(radius_Eu)*R_0_c/R_sun                   #converts dimensionless radius in terms of solar radius
 mass_solar_Eu = np.array(mass_Eu)*M_0_c/M_sun                       #converts dimensionless mass in terms of solar mass
 
-#4th ORDER ADAM-BASHFORTH-----------------------------------------------------------------------------------------------------------------
-"""
-radius_AB = []                                                 
-mass_AB = [] 
-
-for p_AB in np.geomspace(0.1, 2.5e6, num=50):                  #loops through range of central density values
-    y = np.array([p_AB, r])                               #states initial conditions for the state vector
-    
-    y[0] = p_AB
-
-    y[1] = RK4(system,y[0],r[0],tau_AB)
-    y[2] = RK4(system,y[1],r[1],tau_AB)
-    y[3] = RK4(system,y[2],r[2],tau_AB)
-
-    f_m2 = system(y[0],r[0])
-    f_m1 = system(y[1],r[1])
-    f_0 = system(y[2],r[2])
-    f_1 = system(y[3],r[3])
-
-    for i in range(3,len(r)-1):                                 #loops through range of radii values
-        f_m3, f_m2, f_m1, f_0 = f_m2, f_m1, f_0, f_1                                          #saves the previous state vector
-        y[i+1] = y[i] + (1/24)*(55*f_0-59*f_m1+37*f_m2-9*f_m3)*tau_AB                          #calculates the new state vector value
-        f_1 = system(y[i+1],r[i+1])
-        if np.isnan(y[0]) == True:                          #checks if the density (y[0]) is not a number (i.e. divide by zero)
-            radius_AB.append(r[i-1])          #if the density is zero then the radius and mass lists are appended with the previous value
-            mass_AB.append(y[1])
-            break                                           #ends the loop iteration for that given central density
-
-radius_solar_AB = np.array(radius_AB)*R_0/R_sun                   #converts dimensionless radius in terms of solar radius
-mass_solar_AB = np.array(mass_AB)*M_0/M_sun                       #converts dimensionless mass in terms of solar mass
-"""
 
 plt.rcParams.update({'font.size': 20})
 #Plots mass vs radius-------------------------------------------------------------------------------------------------------------------
 plt.plot(mass_solar_RK4,radius_solar_RK4, 'b',linewidth=3, label="4th Order RK")     #plots the RK4 function
 plt.plot(mass_solar_Rel_RK4,radius_solar_Rel_RK4,'c',linestyle='--',linewidth=3 ,label="Relativistic 4th Order RK (Carbon)")
 plt.plot(mass_solar_Rel_fe_RK4,radius_solar_Rel_fe_RK4,'r',linestyle='--',linewidth=3, label="Relativistic 4th Order RK (Iron)")     #plots the RK4 function
-#plt.plot(mass_solar_AB,radius_solar_AB, 'b', label="4th Order Adam-Bashford - Tau = {}".format(tau))
 plt.plot(mass_solar_Eu,radius_solar_Eu, 'g',linewidth=3, label="Euler Method")
 plt.axvline(x=M_limit ,linestyle='--',label="Chandrasekhar limit (1.46 M⊙)")
 plt.legend()
